@@ -1,5 +1,12 @@
 import RPi.GPIO as GPIO
 import time
+import board
+import busio
+import adafruit_bno055
+import math
+
+i2c = busio.I2C(board.SCL, board.SDA)
+sensor = adafruit_bno055.BNO055(i2c, 0x29)
 
 a=1
 
@@ -41,6 +48,26 @@ p2 = GPIO.PWM(enableB, 100)
 p1.start(100)
 p2.start(100)
 
+stop = False
+
+def get_yaw(q):
+     return math.atan2(2.0*(q[1]*q[2] + q[3]*q[0]), q[3]*q[3] - q[0]*q[0]
+                       - q[1]*q[1] + q[2]*q[2]) + 180
+    
+def turn():
+
+    pass
+    '''initial = get_yaw(sensor.quaternion)
+    done = False
+    stop = False
+    while((not stop) and (not done)):
+        current = math.abs(get_yaw(sensor.quaternion) - initial)
+        print('Current absolute yaw diff: ', current)
+        if(current >= 90):
+            done = True
+            print('Done turning')'''
+    
+
 def forward():
     print ("Forward")
     p1.ChangeDutyCycle(100)
@@ -64,13 +91,15 @@ def stop():
     print ("Stop")
     p1.ChangeDutyCycle(0)
     p2.ChangeDutyCycle(0)
-    GPIO.output(leftA, 0)
-    GPIO.output(leftB, 0)
-    GPIO.output(rightA, 0)
-    GPIO.output(rightB, 0)
+    GPIO.output(leftA, 1)
+    GPIO.output(leftB, 1)
+    GPIO.output(rightA, 1)
+    GPIO.output(rightB, 1)
 
 def clockwise():
     print ("Clockwise")
+    p1.ChangeDutyCycle(80)
+    p2.ChangeDutyCycle(80)
     GPIO.output(leftA, 1)
     GPIO.output(leftB, 0)
     GPIO.output(rightA, 0)
@@ -78,6 +107,8 @@ def clockwise():
 
 def counterClockwise():
     print ("CounterClockwise")
+    p1.ChangeDutyCycle(80)
+    p2.ChangeDutyCycle(80)
     GPIO.output(leftA, 0)
     GPIO.output(leftB, 1)
     GPIO.output(rightA, 1)
@@ -85,21 +116,25 @@ def counterClockwise():
 
 def shift_left():
     print ("Shift left")
-    p1.ChangeDutyCycle(100)
+    p1.ChangeDutyCycle(30)
     p2.ChangeDutyCycle(100)
     GPIO.output(leftA, 1)
     GPIO.output(leftB, 1)
     GPIO.output(rightA, 0)
     GPIO.output(rightB, 0)
+##    turn()
+##    forward()
 
 def shift_right():
     print ("Shift right")
     p1.ChangeDutyCycle(100)
-    p2.ChangeDutyCycle(100)
+    p2.ChangeDutyCycle(30)
     GPIO.output(leftA, 1)
     GPIO.output(leftB, 1)
     GPIO.output(rightA, 0)
     GPIO.output(rightB, 0)
+##    turn()
+##    forward()
 
 q = [forward]*a
 
