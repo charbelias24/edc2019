@@ -3,7 +3,7 @@ import apriltag
 import RPi.GPIO as GPIO
 from picamera import PiCamera
 from picamera.array import PiRGBArray
-
+from color_labeler import ColorLabeler
 
 
 ####### TO BE TESTED ON PI #######
@@ -27,6 +27,8 @@ class DetectSigns:
         self.camera.resolution = (frame_width, frame_height)
         self.camera.framerate = 32
         self.rawCapture = PiRGBArray(self.camera, size=(frame_width, frame_height))
+
+        self.color_label = ColorLabeler()
 
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.intersection_pin, GPIO.OUT)
@@ -53,6 +55,7 @@ class DetectSigns:
             else:
                 GPIO.output(self.stop_sign_pin, False)
 
+            detect_traffic_lights(frame, gray)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
@@ -62,7 +65,8 @@ class DetectSigns:
     def detect_traffic_lights(self, frame, gray):
         # detect circles in the image
         circles = cv2.HoughCircles(gray, cv2.cv.CV_HOUGH_GRADIENT, 1.2, 100)
-
+        for (x, y, r) in circles:
+            print(color_label.label(frame[y-r/2 : y+r/2, x-r/2 : x+r/2]))
 
     def detect_april_tags(self, frame): # trying sending in gray instead of frame
         result = self.detector.detect(frame)
