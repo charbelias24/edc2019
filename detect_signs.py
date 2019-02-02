@@ -1,5 +1,5 @@
 import cv2
-import apriltag
+#import apriltag
 import RPi.GPIO as GPIO
 from picamera import PiCamera
 from picamera.array import PiRGBArray
@@ -19,8 +19,8 @@ class DetectSigns:
         self.stop_sign_pin = 5
 
         self.classifier_path = "stopsign_classifier.xml"
-        self.classifier = cv2.CascadeClassifier(classifier)
-        self.detector_april = apriltag.Detector()
+        self.classifier = cv2.CascadeClassifier(self.classifier_path)
+        #self.detector_april = apriltag.Detector()
 
 
         self.camera = PiCamera()
@@ -40,22 +40,27 @@ class DetectSigns:
 
     def start(self):
         for frame_temp in self.camera.capture_continuous(self.rawCapture, format='bgr', use_video_port=True):
-            x1, x2, y1, y2 = (10, 30, 50, 70)
-            frame_temp = frame_temp.array[x1:x2, y1:y2]
+            x1, x2, y1, y2 = (240, 400, 0, 200)
+            frame_temp = frame_temp.array[y1:y2, x1:x2]
 
             gray_temp = cv2.cvtColor(frame_temp, cv2.COLOR_BGR2GRAY)
-
+            '''
             if self.detect_april_tags(frame_temp) == INTERSECTION_TAG:
                 GPIO.output(self.intersection_pin, True)
             else:
                 GPIO.output(self.intersection_pin, False)
+            '''
 
-            if self.detect_stop_sign(frame_temp):
+            if self.detect_stop_sign(frame_temp, gray_temp) is not ():
+                print ("Detected stop sign")
                 GPIO.output(self.stop_sign_pin, True)
             else:
                 GPIO.output(self.stop_sign_pin, False)
 
             detect_traffic_lights(frame, gray)
+
+            self.rawCapture.truncate(0)
+
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
@@ -85,7 +90,10 @@ class DetectSigns:
                 cv2.rectangle(gray,(x,y),(x+w,y+h),(255,0,0),2)
              
             cv2.imshow("frame",gray)
-            self.rawCapture.truncate(0)
+            #self.rawCapture.truncate(0)
 
         # True if any signs were detected. 
         return stop_signs
+
+detection = DetectSigns()
+detection.start()
