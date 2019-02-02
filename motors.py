@@ -25,6 +25,12 @@ green = 18
 enableA = 40
 enableB = 38
 
+frwdUpperLimit = 120
+frwdDownLimit = 60
+
+shiftRatio  = 1.5
+maxShiftSpeed = 80
+
 GPIO.setmode(GPIO.BOARD)
 
 GPIO.setup(leftA, GPIO.OUT)
@@ -117,8 +123,8 @@ def counterClockwise():
 def shift_left(angle):
     print ("Shift left")
     
-    p1.ChangeDutyCycle(angle / 1.5)
-    p2.ChangeDutyCycle(100)
+    p1.ChangeDutyCycle(angle / shiftRatio)
+    p2.ChangeDutyCycle(maxShiftSpeed)
     GPIO.output(leftA, 1)
     GPIO.output(leftB, 1)
     GPIO.output(rightA, 0)
@@ -129,8 +135,8 @@ def shift_left(angle):
 def shift_right():
     print ("Shift right")
 
-    p1.ChangeDutyCycle(100)
-    p2.ChangeDutyCycle((180 - angle) / 1.5)
+    p1.ChangeDutyCycle(maxShiftSpeed)
+    p2.ChangeDutyCycle((180 - angle) / shiftRatio)
     GPIO.output(leftA, 1)
     GPIO.output(leftB, 1)
     GPIO.output(rightA, 0)
@@ -142,11 +148,11 @@ q = [forward]*a
 
 def move(angle):
     global q
-    if (60 < angle < 120):
+    if (frwdDownLimit < angle < frwdUpperLimit):
         q.append((forward, angle))
-    elif 0 < angle <= 60:
+    elif 0 < angle <= frwdDownLimit:
         q.append((shift_left,angle))
-    elif 120 <= angle < 180:
+    elif frwdDownLimit <= angle < 180:
         q.append((shift_right, angle))
     else:
         q.append((stop, angle))
