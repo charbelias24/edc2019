@@ -8,7 +8,7 @@ import math
 i2c = busio.I2C(board.SCL, board.SDA)
 sensor = adafruit_bno055.BNO055(i2c, 0x29)
 
-a=1
+a=5
 
 leftA = 8
 leftB = 10
@@ -114,9 +114,10 @@ def counterClockwise():
     GPIO.output(rightA, 1)
     GPIO.output(rightB, 0)
 
-def shift_left():
+def shift_left(angle):
     print ("Shift left")
-    p1.ChangeDutyCycle(30)
+    
+    p1.ChangeDutyCycle(angle / 1.5)
     p2.ChangeDutyCycle(100)
     GPIO.output(leftA, 1)
     GPIO.output(leftB, 1)
@@ -127,8 +128,9 @@ def shift_left():
 
 def shift_right():
     print ("Shift right")
+
     p1.ChangeDutyCycle(100)
-    p2.ChangeDutyCycle(30)
+    p2.ChangeDutyCycle((180 - angle) / 1.5)
     GPIO.output(leftA, 1)
     GPIO.output(leftB, 1)
     GPIO.output(rightA, 0)
@@ -140,15 +142,16 @@ q = [forward]*a
 
 def move(angle):
     global q
-    if (80 < angle < 100):
-        q.append(forward)
-    elif 20 <= angle <= 80:
-        q.append(shift_left)
-    elif 100 <= angle <= 160:
-        q.append(shift_right)
+    if (60 < angle < 120):
+        q.append((forward, angle))
+    elif 0 < angle <= 60:
+        q.append((shift_left,angle))
+    elif 120 <= angle < 180:
+        q.append((shift_right, angle))
     else:
-        q.append(stop)
-    q.pop(0)()
+        q.append((stop, angle))
+    temp = q.pop(0)
+    temp[0](temp[1])
 
 
 def ultrasonic(trig, echo):
