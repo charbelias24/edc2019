@@ -4,7 +4,7 @@ import time
 import math
 
 
-a = 2
+a = 1
 
 #motors pins
 leftA = 18
@@ -38,12 +38,12 @@ Forward_Upper_Limit = 110
 Forward_Lower_Limit =70
 
 Shift_Speed = 50
-Shift_Ratio = 4
-Max_Speed = 60
-BrakeTorqueRatio = 1
-MaxBreakSpeed = 25
+Shift_Ratio = 5
+Max_Speed = 100
+BrakeTorqueRatio =1
+MaxBreakSpeed = 40
 RightBreakAngle = 140
-LeftBreakAngle = 40
+LeftBreakAngle =40
 BreakRatio = MaxBreakSpeed/LeftBreakAngle
 def forward(angle):
     print ("Forwrd")
@@ -106,8 +106,8 @@ def shift_right(angle):
     else:
         print ('+'*100)
 #	breakSpeed = (angle-RightBreakAngle)*BreakRatio
-        p2.ChangeDutyCycle(speed/BrakeTorqueRatio)
-        p1.ChangeDutyCycle(25)
+        p2.ChangeDutyCycle(speed*BrakeTorqueRatio)
+        p1.ChangeDutyCycle(MaxBreakSpeed)
 	GPIO.output(leftA, 0)
         GPIO.output(leftB, 1)
         GPIO.output(rightA, 1)
@@ -128,8 +128,8 @@ def shift_left(angle):
     else:
         print ('-----------------------------')
 #	breakSpeed = (angle-RightBreakAngle)*BreakRatio
-        p1.ChangeDutyCycle(speed/BrakeTorqueRatio)
-        p2.ChangeDutyCycle(25)
+        p1.ChangeDutyCycle(speed*BrakeTorqueRatio)
+        p2.ChangeDutyCycle(MaxBreakSpeed)
 	GPIO.output(leftA, 1)
         GPIO.output(leftB, 0)
         GPIO.output(rightA,0)
