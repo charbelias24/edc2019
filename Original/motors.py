@@ -1,14 +1,14 @@
 import RPi.GPIO as GPIO
 import time
-import board
-import busio
-import adafruit_bno055
+#import board
+#import busio
+#import adafruit_bno055
 import math
 
-i2c = busio.I2C(board.SCL, board.SDA)
-sensor = adafruit_bno055.BNO055(i2c, 0x29)
+#i2c = busio.I2C(board.SCL, board.SDA)
+#sensor = adafruit_bno055.BNO055(i2c, 0x29)
 
-a=5
+a = 2
 
 leftA = 18
 leftB = 10
@@ -24,12 +24,6 @@ green = 18
 
 enableA = 40
 enableB = 38
-
-frwdUpperLimit = 120
-frwdDownLimit = 60
-
-shiftRatio  = 1.5
-maxShiftSpeed = 80
 
 GPIO.setmode(GPIO.BOARD)
 
@@ -74,8 +68,8 @@ def turn():
             print('Done turning')'''
     
 
-def forward():
-    print ("Forward")
+def forward(angle):
+    print ("Forwrd")
     p1.ChangeDutyCycle(100)
     p2.ChangeDutyCycle(100)
 
@@ -93,7 +87,7 @@ def backward():
     GPIO.output(rightA, 1)
     GPIO.output(rightB, 1)
 
-def stop():
+def stop(angle):
     print ("Stop")
     p1.ChangeDutyCycle(0)
     p2.ChangeDutyCycle(0)
@@ -123,41 +117,67 @@ def counterClockwise():
 def shift_left(angle):
     print ("Shift left")
     
-    p1.ChangeDutyCycle(angle / shiftRatio)
-    p2.ChangeDutyCycle(maxShiftSpeed)
-    GPIO.output(leftA, 1)
-    GPIO.output(leftB, 1)
-    GPIO.output(rightA, 0)
-    GPIO.output(rightB, 0)
+    speed = (180 - angle)
+    print (speed / 4, 100)
+    p1.ChangeDutyCycle(speed/4)
+    p2.ChangeDutyCycle(50)
+    
+    if angle < 140:
+   	GPIO.output(leftA, 1)
+    	GPIO.output(leftB, 1)
+    	GPIO.output(rightA, 0)
+    	GPIO.output(rightB, 0)
+    else:
+        print ('+'*100)
+        p1.ChangeDutyCycle(speed) 
+   	GPIO.output(leftA, 0)
+    	GPIO.output(leftB, 1)
+    	GPIO.output(rightA, 1)
+    	GPIO.output(rightB, 0)
 ##    turn()
 ##    forward()
 
-def shift_right():
+def shift_right(angle):
+
     print ("Shift right")
-
-    p1.ChangeDutyCycle(maxShiftSpeed)
-    p2.ChangeDutyCycle((180 - angle) / shiftRatio)
-    GPIO.output(leftA, 1)
-    GPIO.output(leftB, 1)
-    GPIO.output(rightA, 0)
-    GPIO.output(rightB, 0)
+    speed = angle
+    p1.ChangeDutyCycle(80)
+    p2.ChangeDutyCycle(speed)
+    if angle > 40:
+        GPIO.output(leftA, 1)
+        GPIO.output(leftB, 1)
+        GPIO.output(rightA, 0)
+        GPIO.output(rightB, 0)
+    else:
+        print ('-----------------------------')
+        p2.ChangeDutyCycle(speed)
+        GPIO.output(leftA, 1)
+        GPIO.output(leftB, 0)
+        GPIO.output(rightA, 0)
+        GPIO.output(rightB, 1)
 ##    turn()
 ##    forward()
 
-q = [forward]*a
+q = [(forward,90)]*a
 
 def move(angle):
     global q
-    if (frwdDownLimit < angle < frwdUpperLimit):
+    print (angle)
+    if (70 < angle < 110):
         q.append((forward, angle))
-    elif 0 < angle <= frwdDownLimit:
-        q.append((shift_left,angle))
-    elif frwdDownLimit <= angle < 180:
-        q.append((shift_right, angle))
+    elif 0 < angle <= 70:
+        q.append((shift_right,angle))
+    elif 110 <= angle < 180:
+        q.append((shift_left, angle))
     else:
         q.append((stop, angle))
     temp = q.pop(0)
     temp[0](temp[1])
+
+def exit_m():
+    stop()
+    p1.stop()
+    p2.stop()
 
 
 def ultrasonic(trig, echo):
