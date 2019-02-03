@@ -36,8 +36,8 @@ class Blocks (Structure):
     ("m_index", c_uint),
     ("m_age", c_uint) ]
 
-blocks = BlockArray(5)
-vectors = VectorArray(5)
+blocks = BlockArray(100)
+vectors = VectorArray(100)
 intersections = IntersectionLineArray(100)
 frame = 0
 
@@ -61,14 +61,7 @@ def detect_lines(frame):
   line_get_all_features ()
   i_count = line_get_intersections (100, intersections)
   v_count = line_get_vectors (100, vectors)
-'''
-  if v_count > 0:
-    #print ('frame %3d:' % (frame))
-    #frame = frame + 1
-    for index in range (0, v_count):
-      print ('[VECTOR: (%3d %3d) (%3d %3d)]' % (vectors[index].m_x0, vectors[index].m_y0, vectors[index].m_x1, vectors[index].m_y1))
 
-'''
   try:
     max_vectors = filter_vectors(vectors, v_count)
     if max_vectors:
@@ -89,17 +82,16 @@ def detect_color(frame):
 
   if frame == FrameThreashold:
     pixy.change_prog ("color_connected_components");
-  count = pixy.ccc_get_blocks (5, blocks)
+  count = pixy.ccc_get_blocks (100, blocks)
 
-'''  if count > 0:
+  '''  if count > 0:
     #print('frame %3d:' % (frame))
     #frame = frame + 1
     for index in range (0, count):
-      print ('[BLOCK: SIG=%d X=%3d Y=%3d WIDTH=%3d HEIGHT=%3d]' % (blocks[index].m_signature, blocks[index].m_x, blocks[index].m_y, blocks[index].m_width, blocks[index].m_height))
-'''
+      print ('[BLOCK: SIG=%d X=%3d Y=%3d WIDTH=%3d HEIGHT=%3d]' % (blocks[index].m_signature, blocks[index].m_x, blocks[index].m_y, blocks[index].m_width, blocks[index].m_height))'''
   FoundBox = False
   if count > 0:
-  for i in range(count):
+   for i in range(count):
     if(blocks[i].m_signature == GreenBox):
       FoundBox = True
       if(SafeToShift):
@@ -123,7 +115,7 @@ def detect_color(frame):
         
 
         
-  if( (not FoundBox) and ( (time.time() - BoxFoundTimeStamp) > TimeToSafety) )
+  if( (not FoundBox) and ( (time.time() - BoxFoundTimeStamp) > TimeToSafety) ):
     SafeToShift = True
 
 
