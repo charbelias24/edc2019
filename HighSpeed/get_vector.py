@@ -2,7 +2,7 @@ import pixy
 from ctypes import *
 from pixy import *
 from vector_manip import *
-from motors import move, stop
+from motors import move, stop, exit_m
 
 # pixy2 Python SWIG get line features example #
 
@@ -49,7 +49,7 @@ while 1:
       move(degrees(get_angle(add_vectors(max_vectors))))
 
   except KeyboardInterrupt:
-    stop()
+    exit_m()
 
     #print(max_vectors)
     
