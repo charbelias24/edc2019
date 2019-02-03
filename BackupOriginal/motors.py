@@ -10,7 +10,7 @@ sensor = adafruit_bno055.BNO055(i2c, 0x29)
 
 a=5
 
-leftA = 8
+leftA = 18
 leftB = 10
 
 rightA = 12

@@ -7,8 +7,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def get_angle(line):
-    if( get_line_distance(line) == 0):
-        return 90
     return acos(line[0] / get_line_distance(line)) # angle in radians
 
 def print_vectors(vectors):
