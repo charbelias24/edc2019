@@ -95,6 +95,8 @@ def detect_color(frame):
     if(blocks[i].m_signature == GreenBox):
       FoundBox = True
       if(SafeToShift):
+        backward()
+        time.sleep(0.5)
         BoxFoundTimeStamp = time.time()
         if(LeftLane):
           shift_right(180 - LeftShiftAngle)
