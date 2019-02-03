@@ -48,7 +48,7 @@ TotalFramePeriod = 30
 BoxAhead = False
 SafeToShift = True
 LeftLane = True
-GreenBox = "Green Box"
+GreenBox = 8
 LeftShiftAngle = 50
 BoxFoundTimeStamp = 0
 TimeToSafety = 1.2
@@ -69,7 +69,7 @@ def detect_lines(frame):
       print ('[VECTOR: (%3d %3d) (%3d %3d)]' % (vectors[index].m_x0, vectors[index].m_y0, vectors[index].m_x1, vectors[index].m_y1))
 
 '''
- try:
+  try:
     max_vectors = filter_vectors(vectors, v_count)
     if max_vectors:
       move(degrees(get_angle(add_vectors(max_vectors))))
@@ -80,6 +80,12 @@ def detect_lines(frame):
 
 def detect_color(frame):
   #print ('colors')
+  global BoxFoundTimeStamp
+  global LeftLane
+  global SafeToShift
+  global TimeToSafety
+  global ShiftLaneDelay
+
 
   if frame == FrameThreashold:
     pixy.change_prog ("color_connected_components");
@@ -92,8 +98,9 @@ def detect_color(frame):
       print ('[BLOCK: SIG=%d X=%3d Y=%3d WIDTH=%3d HEIGHT=%3d]' % (blocks[index].m_signature, blocks[index].m_x, blocks[index].m_y, blocks[index].m_width, blocks[index].m_height))
 '''
   FoundBox = False
-  for b in Blocks:
-    if(b.m_signature == GreenBox):
+  if count > 0:
+  for i in range(count):
+    if(blocks[i].m_signature == GreenBox):
       FoundBox = True
       if(SafeToShift):
         BoxFoundTimeStamp = time.time()
