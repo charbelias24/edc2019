@@ -71,7 +71,22 @@ class DetectSigns:
         # detect circles in the image
         circles = cv2.HoughCircles(gray, cv2.cv.CV_HOUGH_GRADIENT, 1.2, 100)
         for (x, y, r) in circles:
-            print(color_label.label(frame[y-r/2 : y+r/2, x-r/2 : x+r/2]))
+            
+            blurred = cv2.GaussianBlur(frame, (5, 5), 0)
+            gray = cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY)
+            lab = cv2.cvtColor(blurred, cv2.COLOR_BGR2LAB)
+            thresh = cv2.threshold(gray, 60, 255, cv2.THRESH_BINARY)[1]
+            
+            # find contours in the thresholded image
+            cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
+                cv2.CHAIN_APPROX_SIMPLE)
+            cnts = imutils.grab_contours(cnts)
+
+            for c in cnts:
+                # detect the shape of the contour and label the color
+                color = cl.label(lab, c)
+
+                print(color)
 
     def detect_april_tags(self, frame): # trying sending in gray instead of frame
         result = self.detector.detect(frame)

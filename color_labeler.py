@@ -28,11 +28,11 @@ class ColorLabeler:
 		# to L*a*b*
 		self.lab = cv2.cvtColor(self.lab, cv2.COLOR_RGB2LAB)
 
-	def label(self, image):
+	def label(self, image, c):
 		# construct a mask for the contour, then compute the
 		# average L*a*b* value for the masked region
 		mask = np.zeros(image.shape[:2], dtype="uint8")
-		#cv2.drawContours(mask, [c], -1, 255, -1)
+		cv2.drawContours(mask, [c], -1, 255, -1)
 		mask = cv2.erode(mask, None, iterations=2)
 		mean = cv2.mean(image, mask=mask)[:3]
 
