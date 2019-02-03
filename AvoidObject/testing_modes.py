@@ -51,7 +51,7 @@ LeftLane = True
 GreenBox = 8
 LeftShiftAngle = 50
 BoxFoundTimeStamp = 0
-TimeToSafety = 1.2
+TimeToSafety = 3
 ShiftLaneDelay = 0.8
 
 def detect_lines(frame):
@@ -109,11 +109,19 @@ def detect_color(frame):
           time.sleep(ShiftLaneDelay)
           LeftLane = False
           SafeToShift = False
+          forward(100)
+          time.sleep(0.5)
+          shift_left(LeftShiftAngle)
         else:
           shift_left(LeftShiftAngle)
           time.sleep(ShiftLaneDelay)
           LeftLane = True
           SafeToShift = False
+          forward(100)
+          time.sleep(0.5)
+          shift_right(180 - LeftShiftAngle)
+        
+
         
   if( (not FoundBox) and ( (time.time() - BoxFoundTimeStamp) > TimeToSafety) )
     SafeToShift = True
